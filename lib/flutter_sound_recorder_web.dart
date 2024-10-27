@@ -25,7 +25,6 @@ import 'package:flutter_sound_platform_interface/flutter_sound_recorder_platform
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'dart:typed_data';
 import 'package:logger/logger.dart' show Level;
-import 'dart:html';
 import 'package:js/js.dart';
 import 'flutter_sound_web.dart';
 //import 'dart:html' as html;
@@ -158,16 +157,17 @@ class FlutterSoundRecorderWeb extends FlutterSoundRecorderPlatform {
     FlutterSoundRecorderCallback callback, {
     required Codec codec,
   }) async {
-    if (codec == Codec.pcmFloat32 || codec == Codec.pcm16) {
-      return true;
-    }
-
-    var r = MediaRecorder.isTypeSupported(mime_types[codec.index]);
-    if (r)
-      callback.log(Level.debug, 'mime_types[codec] encoder is supported');
-    else
-      callback.log(Level.debug, 'mime_types[codec] encoder is NOT supported');
-    return r;
+    throw UnimplementedError();
+    // if (codec == Codec.pcmFloat32 || codec == Codec.pcm16) {
+    //   return true;
+    // }
+    //
+    // var r = MediaRecorder.isTypeSupported(mime_types[codec.index]);
+    // if (r)
+    //   callback.log(Level.debug, 'mime_types[codec] encoder is supported');
+    // else
+    //   callback.log(Level.debug, 'mime_types[codec] encoder is NOT supported');
+    // return r;
   }
 
   @override

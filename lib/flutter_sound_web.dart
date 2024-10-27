@@ -17,7 +17,7 @@
  */
 
 import 'dart:async';
-import 'package:web/web.dart' as web; // Add
+import 'dart:html' as html;
 
 //import 'package:meta/meta.dart';
 import 'package:flutter_sound_platform_interface/flutter_sound_recorder_platform_interface.dart';
@@ -54,12 +54,12 @@ class ImportJsLibraryWeb {
     return _importJSLibraries([url]);
   }
 
-  static web.HTMLScriptElement _createScriptTag(String library) {
-    final web.HTMLScriptElement script = web.HTMLScriptElement()
+  static html.ScriptElement _createScriptTag(String library) {
+    final html.ScriptElement script = html.ScriptElement()
       ..type = "text/javascript"
       ..charset = "utf-8"
       ..async = true
-      //..defer = true
+    //..defer = true
       ..src = library;
     return script;
   }
@@ -68,12 +68,12 @@ class ImportJsLibraryWeb {
   /// Future that resolves when all load.
   static Future<void> _importJSLibraries(List<String> libraries) {
     final List<Future<void>> loading = <Future<void>>[];
-    final head = web.document.querySelector('head')!;
+    final head = html.querySelector('head')!;
 
     libraries.forEach((String library) {
       if (!isImported(library)) {
         final scriptTag = _createScriptTag(library);
-        head.append(scriptTag);
+        head.children.add(scriptTag);
         loading.add(scriptTag.onLoad.first);
       }
     });
@@ -81,26 +81,22 @@ class ImportJsLibraryWeb {
     return Future.wait(loading);
   }
 
-  static bool _isLoaded(web.Element head, String url) {
+  static bool _isLoaded(html.Element head, String url) {
     if (url.startsWith("./")) {
       url = url.replaceFirst("./", "");
     }
-
-    final length = head.children.length;
-    for (var i = 0; i < length; i++) {
-      final element = head.children.item(i);
-      if (element is web.HTMLScriptElement) {
+    for (var element in head.children) {
+      if (element is html.ScriptElement) {
         if (element.src.endsWith(url)) {
           return true;
         }
       }
     }
-
     return false;
   }
 
   static bool isImported(String url) {
-    final web.Element head = web.document.querySelector('head')!;
+    final html.Element head = html.querySelector('head')!;
     return _isLoaded(head, url);
   }
 }
@@ -159,7 +155,7 @@ bool isJsLibraryImported(String url, {required String flutterPluginName}) {
 ///
 /// This class implements the `package:FlutterSoundPlayerPlatform` functionality for the web.
 class FlutterSoundPlugin //extends FlutterSoundPlatform
-{
+    {
   static int _numberOfScripts = 4;
   static Completer ScriptLoaded = Completer();
 

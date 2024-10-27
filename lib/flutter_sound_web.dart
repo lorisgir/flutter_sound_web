@@ -17,7 +17,8 @@
  */
 
 import 'dart:async';
-import 'dart:html' as html;
+import 'dart:js_interop';
+import 'package:web/web.dart' as html;
 
 //import 'package:meta/meta.dart';
 import 'package:flutter_sound_platform_interface/flutter_sound_recorder_platform_interface.dart';
@@ -54,12 +55,12 @@ class ImportJsLibraryWeb {
     return _importJSLibraries([url]);
   }
 
-  static html.ScriptElement _createScriptTag(String library) {
-    final html.ScriptElement script = html.ScriptElement()
+  static html.HTMLScriptElement _createScriptTag(String library) {
+    final html.HTMLScriptElement script = html.HTMLScriptElement()
       ..type = "text/javascript"
       ..charset = "utf-8"
       ..async = true
-    //..defer = true
+      //..defer = true
       ..src = library;
     return script;
   }
@@ -85,8 +86,9 @@ class ImportJsLibraryWeb {
     if (url.startsWith("./")) {
       url = url.replaceFirst("./", "");
     }
-    for (var element in head.children) {
-      if (element is html.ScriptElement) {
+    for (var i = 0; i < head.children.length; i++) {
+      var element = head.children.item(i);
+      if (element is html.HTMLScriptElement) {
         if (element.src.endsWith(url)) {
           return true;
         }
@@ -155,7 +157,7 @@ bool isJsLibraryImported(String url, {required String flutterPluginName}) {
 ///
 /// This class implements the `package:FlutterSoundPlayerPlatform` functionality for the web.
 class FlutterSoundPlugin //extends FlutterSoundPlatform
-    {
+{
   static int _numberOfScripts = 4;
   static Completer ScriptLoaded = Completer();
 
@@ -163,15 +165,9 @@ class FlutterSoundPlugin //extends FlutterSoundPlatform
   static void registerWith(Registrar registrar) {
     FlutterSoundPlayerWeb.registerWith(registrar);
     FlutterSoundRecorderWeb.registerWith(registrar);
-    importJsLibrary(
-        url: "./howler/howler.js", flutterPluginName: "flutter_sound_web");
-    importJsLibrary(
-        url: "./src/flutter_sound.js", flutterPluginName: "flutter_sound_web");
-    importJsLibrary(
-        url: "./src/flutter_sound_player.js",
-        flutterPluginName: "flutter_sound_web");
-    importJsLibrary(
-        url: "./src/flutter_sound_recorder.js",
-        flutterPluginName: "flutter_sound_web");
+    importJsLibrary(url: "./howler/howler.js", flutterPluginName: "flutter_sound_web");
+    importJsLibrary(url: "./src/flutter_sound.js", flutterPluginName: "flutter_sound_web");
+    importJsLibrary(url: "./src/flutter_sound_player.js", flutterPluginName: "flutter_sound_web");
+    importJsLibrary(url: "./src/flutter_sound_recorder.js", flutterPluginName: "flutter_sound_web");
   }
 }

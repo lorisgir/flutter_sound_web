@@ -74,7 +74,7 @@ class ImportJsLibraryWeb {
     libraries.forEach((String library) {
       if (!isImported(library)) {
         final scriptTag = _createScriptTag(library);
-        head.children.add(scriptTag);
+        head.append(scriptTag);
         loading.add(scriptTag.onLoad.first);
       }
     });
@@ -86,13 +86,19 @@ class ImportJsLibraryWeb {
     if (url.startsWith("./")) {
       url = url.replaceFirst("./", "");
     }
-    for (var i = 0; i < head.children.length; i++) {
-      var element = head.children.item(i);
-      if (element is html.HTMLScriptElement) {
-        if (element.src.endsWith(url)) {
-          return true;
+    try {
+      for (var i = 0; i < head.children.length; i++) {
+        var element = head.children.item(i);
+        if (element is html.HTMLScriptElement) {
+          if (element.src.endsWith(url)) {
+            return true;
+          }
         }
       }
+    }
+    catch (e) {
+      print(e);
+      return false;
     }
     return false;
   }
@@ -164,7 +170,7 @@ class FlutterSoundPlugin //extends FlutterSoundPlatform
   /// Registers this class as the default instance of [FlutterSoundPlatform].
   static void registerWith(Registrar registrar) {
     FlutterSoundPlayerWeb.registerWith(registrar);
-    FlutterSoundRecorderWeb.registerWith(registrar);
+    // FlutterSoundRecorderWeb.registerWith(registrar);
     importJsLibrary(url: "./howler/howler.js", flutterPluginName: "flutter_sound_web");
     importJsLibrary(url: "./src/flutter_sound.js", flutterPluginName: "flutter_sound_web");
     importJsLibrary(url: "./src/flutter_sound_player.js", flutterPluginName: "flutter_sound_web");

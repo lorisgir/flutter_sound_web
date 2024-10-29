@@ -25,40 +25,31 @@ extension Uint8ListJSInterop on Uint8List {
   }
 }
 
+// Modified callback type to handle JS number conversion
 extension type FlutterSoundPlayerCallbackJS._(JSObject _) implements JSObject {
-  // Constructor per creare un oggetto literal con tutti i callback opzionali
-  external factory FlutterSoundPlayerCallbackJS(
-      {JSFunction? updateProgress,
-      JSFunction? updatePlaybackState,
-      JSFunction? needSomeFood,
-      JSFunction? audioPlayerFinished,
-      JSFunction? startPlayerCompleted,
-      JSFunction? pausePlayerCompleted,
-      JSFunction? resumePlayerCompleted,
-      JSFunction? stopPlayerCompleted,
-      JSFunction? openPlayerCompleted,
-      JSFunction? log});
+  external factory FlutterSoundPlayerCallbackJS({
+    JSFunction? updateProgress,
+    JSFunction? updatePlaybackState,
+    JSFunction? needSomeFood,
+    JSFunction? audioPlayerFinished,
+    JSFunction? startPlayerCompleted,
+    JSFunction? pausePlayerCompleted,
+    JSFunction? resumePlayerCompleted,
+    JSFunction? stopPlayerCompleted,
+    JSFunction? openPlayerCompleted,
+    JSFunction? log
+  });
 
-  // Definizione dei membri di callback
-  external void updateProgress(JSObject options);
-
-  external void updatePlaybackState(int state);
-
-  external void needSomeFood(int ln);
-
-  external void audioPlayerFinished(int state);
-
-  external void startPlayerCompleted(int state, bool success, int duration);
-
-  external void pausePlayerCompleted(int state, bool success);
-
-  external void resumePlayerCompleted(int state, bool success);
-
-  external void stopPlayerCompleted(int state, bool success);
-
-  external void openPlayerCompleted(int state, bool success);
-
-  external void log(JSString logLevel, JSString msg);
+  external JSNumber updateProgress(JSObject options);
+  external JSNumber updatePlaybackState(JSNumber state);
+  external JSNumber needSomeFood(JSNumber ln);
+  external JSNumber audioPlayerFinished(JSNumber state);
+  external JSNumber startPlayerCompleted(JSNumber state, JSBoolean success, JSNumber duration);
+  external JSNumber pausePlayerCompleted(JSNumber state, JSBoolean success);
+  external JSNumber resumePlayerCompleted(JSNumber state, JSBoolean success);
+  external JSNumber stopPlayerCompleted(JSNumber state, JSBoolean success);
+  external JSNumber openPlayerCompleted(JSNumber state, JSBoolean success);
+  external JSNumber log(JSString logLevel, JSString msg);
 }
 
 // JS Interop Type Definitions
@@ -168,37 +159,37 @@ class FlutterSoundPlayerWeb extends FlutterSoundPlayerPlatform {
   // Convert callback functions to JS
   JSArray<JSFunction> _createCallbackTable(FlutterSoundPlayerCallback callback) {
     final callbackFunctions = [
-      (int position, int duration) {
+      (FlutterSoundPlayerCallbackJS cb, int position, int duration) {
         callback.updateProgress(
           duration: duration,
           position: position,
         );
       }.toJS,
-      (int state) {
+      (FlutterSoundPlayerCallbackJS cb, int state) {
         callback.updatePlaybackState(state);
       }.toJS,
-      (int ln) {
+      (FlutterSoundPlayerCallbackJS cb, int ln) {
         callback.needSomeFood(ln);
       }.toJS,
-      (int state) {
+      (FlutterSoundPlayerCallbackJS cb, int state) {
         callback.audioPlayerFinished(state);
       }.toJS,
-      (int state, bool success, int duration) {
+      (FlutterSoundPlayerCallbackJS cb, int state, bool success, int duration) {
         callback.startPlayerCompleted(state, success, duration);
       }.toJS,
-      (int state, bool success) {
+      (FlutterSoundPlayerCallbackJS cb, int state, bool success) {
         callback.pausePlayerCompleted(state, success);
       }.toJS,
-      (int state, bool success) {
+      (FlutterSoundPlayerCallbackJS cb, int state, bool success) {
         callback.resumePlayerCompleted(state, success);
       }.toJS,
-      (int state, bool success) {
+      (FlutterSoundPlayerCallbackJS cb, int state, bool success) {
         callback.stopPlayerCompleted(state, success);
       }.toJS,
-      (int state, bool success) {
+      (FlutterSoundPlayerCallbackJS cb, int state, bool success) {
         callback.openPlayerCompleted(state, success);
       }.toJS,
-      (int level, String msg) {
+      (FlutterSoundPlayerCallbackJS cb, int level, String msg) {
         callback.log(Level.values[level], msg);
       }.toJS,
     ];
@@ -208,40 +199,68 @@ class FlutterSoundPlayerWeb extends FlutterSoundPlayerPlatform {
 
   FlutterSoundPlayerCallbackJS _createCallbackTable2(FlutterSoundPlayerCallback callback) {
     return FlutterSoundPlayerCallbackJS(
-      updateProgress: (int position, int duration) {
+      updateProgress: ((JSNumber position, JSNumber duration) {
         callback.updateProgress(
-          duration: duration,
-          position: position,
+          duration: duration.toDartInt,
+          position: position.toDartInt,
         );
-      }.toJS,
-      updatePlaybackState: (int state) {
-        callback.updatePlaybackState(state);
-      }.toJS,
-      needSomeFood: (int ln) {
-        callback.needSomeFood(ln);
-      }.toJS,
-      audioPlayerFinished: (int state) {
-        callback.audioPlayerFinished(state);
-      }.toJS,
-      startPlayerCompleted: (int state, bool success, int duration) {
-        callback.startPlayerCompleted(state, success, duration);
-      }.toJS,
-      pausePlayerCompleted: (int state, bool success) {
-        callback.pausePlayerCompleted(state, success);
-      }.toJS,
-      resumePlayerCompleted: (int state, bool success) {
-        callback.resumePlayerCompleted(state, success);
-      }.toJS,
-      stopPlayerCompleted: (int state, bool success) {
-        callback.stopPlayerCompleted(state, success);
-      }.toJS,
-      openPlayerCompleted: (int state, bool success) {
-        callback.openPlayerCompleted(state, success);
-      }.toJS,
-      log:  (int level, String msg) {
-        callback.log(Level.values[level], msg);
-      }.toJS,
+        return 0.toJS;
+      }).toJS,
+      updatePlaybackState: ((JSNumber state) {
+        callback.updatePlaybackState(state.toDartInt);
+        return 0.toJS;
+      }).toJS,
+      needSomeFood: ((JSNumber ln) {
+        callback.needSomeFood(ln.toDartInt);
+        return 0.toJS;
+      }).toJS,
+      audioPlayerFinished: ((JSNumber state) {
+        callback.audioPlayerFinished(state.toDartInt);
+        return 0.toJS;
+      }).toJS,
+      startPlayerCompleted: ((JSNumber state, JSBoolean success, JSNumber duration) {
+        callback.startPlayerCompleted(
+          state.toDartInt,
+          success.toDart,
+          duration.toDartInt,
+        );
+        return 0.toJS;
+      }).toJS,
+      pausePlayerCompleted: ((JSNumber state, JSBoolean success) {
+        callback.pausePlayerCompleted(state.toDartInt, success.toDart);
+        return 0.toJS;
+      }).toJS,
+      resumePlayerCompleted: ((JSNumber state, JSBoolean success) {
+        callback.resumePlayerCompleted(state.toDartInt, success.toDart);
+        return 0.toJS;
+      }).toJS,
+      stopPlayerCompleted: ((JSNumber state, JSBoolean success) {
+        callback.stopPlayerCompleted(state.toDartInt, success.toDart);
+        return 0.toJS;
+      }).toJS,
+      openPlayerCompleted: ((JSNumber state, JSBoolean success) {
+        callback.openPlayerCompleted(state.toDartInt, success.toDart);
+        return 0.toJS;
+      }).toJS,
+      log: ((JSString level, JSString msg) {
+        callback.log(Level.values[int.parse(level.toDart)], msg.toDart);
+        return 0.toJS;
+      }).toJS,
     );
+  }
+
+  // Modified method implementations to handle JS number conversions
+  @override
+  Future<int> openPlayer(FlutterSoundPlayerCallback callback, {required Level logLevel}) async {
+    int slotno = findSession(callback);
+    if (slotno < _slots.length) {
+      assert(_slots[slotno] == null);
+      _slots[slotno] = newPlayerInstance(_createCallbackTable2(callback), _createCallbackTable(callback));
+    } else {
+      assert(slotno == _slots.length);
+      _slots.add(newPlayerInstance(_createCallbackTable2(callback), _createCallbackTable(callback)));
+    }
+    return _slots[slotno]!.initializeMediaPlayer();
   }
 
   @override
@@ -256,19 +275,7 @@ class FlutterSoundPlayerWeb extends FlutterSoundPlayerPlatform {
     return null;
   }
 
-  @override
-  Future<int> openPlayer(FlutterSoundPlayerCallback callback, {required Level logLevel}) async {
-    int slotno = findSession(callback);
-    if (slotno < _slots.length) {
-      assert(_slots[slotno] == null);
 
-      _slots[slotno] = newPlayerInstance( _createCallbackTable2(callback), _createCallbackTable(callback));
-    } else {
-      assert(slotno == _slots.length);
-      _slots.add(newPlayerInstance( _createCallbackTable2(callback), _createCallbackTable(callback)));
-    }
-    return _slots[slotno]!.initializeMediaPlayer();
-  }
 
   @override
   Future<int> closePlayer(FlutterSoundPlayerCallback callback) async {
